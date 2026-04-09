@@ -47,6 +47,7 @@ export type DocumentPayload = {
   reason?: string | null;
   particular: string;
   amount: number;
+  department_in_id: number;
   routed_department_id: number;
   status: string;
   remarks?: string | null;
@@ -272,6 +273,9 @@ export default function DocumentForm({
       ? String(initial.amount)
       : ""
   );
+  const [departmentInId, setDepartmentInId] = useState<number>(
+    initial?.department_in_id ?? initial?.routed_department_id ?? (departments[0]?.id ?? 0)
+  );
   const [routedDepartmentId, setRoutedDepartmentId] = useState<number>(
     initial?.routed_department_id ?? (departments[0]?.id ?? 0)
   );
@@ -287,12 +291,12 @@ export default function DocumentForm({
     const type = typeOfDocument.trim().toUpperCase();
     const map: Record<string, Partial<Record<string, number | boolean>>> = {
       "LETTER REQUEST": { pay_claimant: true, contact_number: true },
-      "PURCHASE REQUEST": { document_number: true, amount: 1000000 },
-      "PURCHASE ORDER": { document_number: true, amount: 1000000 },
-      "PO ATTACHMENTS": { amount: 1000000 },
-      OBR: { pay_claimant: true, document_number: true, particular: true, amount: 1000000 },
-      VOUCHER: { pay_claimant: true, document_number: true, particular: true, amount: 1000000 },
-      CHEQUE: { pay_claimant: true, document_number: true, particular: true, amount: 1000000 },
+      "PURCHASE REQUEST": { document_number: true, amount: true },
+      "PURCHASE ORDER": { document_number: true, amount: true },
+      "PO ATTACHMENTS": { amount: true },
+      OBR: { pay_claimant: true, document_number: true, particular: true, amount: true },
+      VOUCHER: { pay_claimant: true, document_number: true, particular: true, amount: true },
+      CHEQUE: { pay_claimant: true, document_number: true, particular: true, amount: true },
       MOA: { particular: true },
       "DEED OF DONATION": { particular: true },
       "DEED OF SALE": { particular: true },
@@ -330,12 +334,11 @@ export default function DocumentForm({
     return "Pay Claimant";
   }, [typeOfDocument]);
 
-  const amountMin = typeof requirements.amount === "number" ? requirements.amount : 0;
-
   useEffect(() => {
     if (departments.length === 0) return;
+    if (!departmentInId) setDepartmentInId(departments[0].id);
     if (!routedDepartmentId) setRoutedDepartmentId(departments[0].id);
-  }, [departments, routedDepartmentId]);
+  }, [departmentInId, departments, routedDepartmentId]);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -366,8 +369,6 @@ export default function DocumentForm({
       const numericAmount = Number(amount);
       if (!amount || Number.isNaN(numericAmount)) {
         errors.amount = "Amount is required.";
-      } else if (amountMin > 0 && numericAmount < amountMin) {
-        errors.amount = `Amount must be at least ${amountMin.toLocaleString("en-US")} pesos.`;
       }
     }
 
@@ -387,6 +388,7 @@ export default function DocumentForm({
         reason: reason || null,
         particular,
         amount: Number(amount),
+        department_in_id: Number(departmentInId),
         routed_department_id: Number(routedDepartmentId),
         status,
         remarks: remarks || null,
@@ -597,9 +599,7 @@ export default function DocumentForm({
               ) : (
                 <p className="mt-1 text-sm text-gray-500">
                   {requirements.amount
-                    ? amountMin > 0
-                      ? `Required. Minimum ${amountMin.toLocaleString("en-US")} pesos.`
-                      : "Required for the selected document type."
+                    ? "Required for the selected document type."
                     : "Enter the total amount in pesos."}
                 </p>
               )}
@@ -691,6 +691,16 @@ export default function DocumentForm({
 
           <div className="grid gap-6 md:grid-cols-2">
             <DepartmentSearchSelect
+              label="Department In"
+              value={departmentInId}
+              departments={departments}
+              onChange={setDepartmentInId}
+              placeholder="Search receiving department"
+              helperText="Select the department that received this document."
+              required
+              showDetails
+            />
+            <DepartmentSearchSelect
               label="Department Out"
               value={routedDepartmentId}
               departments={departments}
@@ -780,7 +790,7 @@ export default function DocumentForm({
         </Link>
         <button
           type="submit"
-          disabled={loading || !routedDepartmentId}
+          disabled={loading || !departmentInId || !routedDepartmentId}
           className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#7b2c3d] to-[#9b3d4d] px-8 py-3 text-base font-semibold text-white shadow-md hover:from-[#6b2433] hover:to-[#8b3545] disabled:cursor-not-allowed disabled:opacity-70 transition-all duration-300 ease-in-out active:scale-[0.98]"
         >
           {loading ? (

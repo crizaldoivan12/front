@@ -27,6 +27,7 @@ type DocumentRow = {
   date: string;
   pay_claimant: string;
   status: string;
+  department_in?: { name: string };
   department?: { name: string };
   routed_department?: { name: string };
 };
@@ -372,6 +373,9 @@ export default function DashboardPage() {
                     Pay Claimant
                   </th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                    Department In
+                  </th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
                     Department Out
                   </th>
                   <th className="w-[180px] px-6 py-4 text-left text-sm font-semibold text-gray-700">
@@ -400,6 +404,11 @@ export default function DashboardPage() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className="text-base text-gray-700">
+                          {doc.department_in?.name ?? "N/A"}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="text-base text-gray-700">
                           {doc.routed_department?.name ?? "N/A"}
                         </span>
                       </td>
@@ -410,7 +419,7 @@ export default function DashboardPage() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={5} className="px-6 py-12 text-center">
+                    <td colSpan={6} className="px-6 py-12 text-center">
                       <p className="text-base text-gray-500">
                         No documents require action right now
                       </p>

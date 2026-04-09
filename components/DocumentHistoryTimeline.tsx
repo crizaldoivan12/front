@@ -26,6 +26,7 @@ export type DocumentHistoryDetails = {
   particular?: string | null;
   amount?: number | string | null;
   status?: string | null;
+  department_in_name?: string | null;
   routed_department_name?: string | null;
   created_at?: string | null;
   updated_at?: string | null;
@@ -88,7 +89,12 @@ export default function DocumentHistoryTimeline({
     };
 
     const addDepartment = (label: string) => {
-      addValue(label, document.routed_department_name ?? "");
+      addValue(
+        label,
+        label === "Department In"
+          ? document.department_in_name ?? ""
+          : document.routed_department_name ?? ""
+      );
     };
 
     const typeMap: Record<string, () => void> = {
@@ -180,8 +186,10 @@ export default function DocumentHistoryTimeline({
       if (document.document_number) addDocumentNumber("Document Number");
       if (document.particular) addParticular("Particular");
       if (document.amount) addAmount("Amount", document.amount);
-      if (document.routed_department_name) addDepartment("Department Out");
     }
+
+    if (document.department_in_name) addDepartment("Department In");
+    if (document.routed_department_name) addDepartment("Department Out");
 
     addValue("Status", document.status ?? "");
     addValue(

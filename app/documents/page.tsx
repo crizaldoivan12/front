@@ -31,6 +31,7 @@ type Document = {
   amount: string;
   status: string;
   remarks?: string | null;
+  department_in?: Department;
   routed_department?: Department;
   encoded_by_id?: number;
   encoded_by?: {
@@ -125,6 +126,7 @@ export default function DocumentsPage() {
         doc.particular,
         doc.remarks,
         doc.status,
+        doc.department_in?.name,
         doc.routed_department?.name,
         doc.encoded_by?.name,
       ]
@@ -962,6 +964,9 @@ export default function DocumentsPage() {
                       Remarks
                     </th>
                     <th className="w-40 px-6 py-4 text-left text-sm font-semibold text-gray-700 align-middle">
+                      Dept. In
+                    </th>
+                    <th className="w-40 px-6 py-4 text-left text-sm font-semibold text-gray-700 align-middle">
                       Dept. Out
                     </th>
                     <th className="w-[200px] px-6 py-4 text-left text-sm font-semibold text-gray-700 align-middle">
@@ -1169,6 +1174,11 @@ export default function DocumentsPage() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap align-top">
                         <span className="text-sm text-gray-700">
+                          {doc.department_in?.name ?? "—"}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap align-top">
+                        <span className="text-sm text-gray-700">
                           {doc.routed_department?.name ?? "—"}
                         </span>
                       </td>
@@ -1323,6 +1333,4 @@ export default function DocumentsPage() {
     </MainLayout>
   );
 }
-
-
 

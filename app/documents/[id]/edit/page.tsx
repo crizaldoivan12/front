@@ -87,6 +87,8 @@ export default function EditDocumentPage() {
         setDepartments(depsRes.data ?? []);
         const routedDepartmentName =
           docRes.routed_department?.name ?? docRes.routedDepartment?.name ?? "";
+        const departmentInName =
+          docRes.department_in?.name ?? docRes.departmentIn?.name ?? "";
         setDoc({
           id: docRes.id,
           document_code: docRes.document_code,
@@ -99,6 +101,7 @@ export default function EditDocumentPage() {
           reason: docRes.reason ?? "",
           particular: docRes.particular,
           amount: docRes.amount !== null && docRes.amount !== undefined ? Number(docRes.amount) : 0,
+          department_in_id: Number(docRes.department_in_id ?? docRes.routed_department_id),
           routed_department_id: Number(docRes.routed_department_id),
           status: docRes.status === "Pending" ? "For Signature" : docRes.status,
           remarks: docRes.remarks ?? "",
@@ -114,6 +117,7 @@ export default function EditDocumentPage() {
           particular: docRes.particular ?? "",
           amount: docRes.amount ?? null,
           status: docRes.status === "Pending" ? "For Signature" : docRes.status,
+          department_in_name: departmentInName,
           routed_department_name: routedDepartmentName,
           created_at: docRes.created_at ?? null,
           updated_at: docRes.updated_at ?? null,
